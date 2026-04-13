@@ -43,7 +43,7 @@ type Config struct {
 	LogCategories []string
 }
 
-var ErrUnsupportedOnWindows = errors.New("ebiten: remoten is not supported on windows yet")
+var ErrUnsupportedOnWindows = errors.New("ebiten: remoten is not supported on Windows yet")
 
 func LoadConfig(goos string, getenv func(string) string) (Config, error) {
 	cfg := Config{}
@@ -52,7 +52,8 @@ func LoadConfig(goos string, getenv func(string) string) (Config, error) {
 		return cfg, nil
 	}
 	if goos == "windows" {
-		return Config{}, ErrUnsupportedOnWindows
+		cfg.Enabled = false
+		return cfg, ErrUnsupportedOnWindows
 	}
 
 	cfg.Enabled = true
