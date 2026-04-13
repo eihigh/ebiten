@@ -93,6 +93,19 @@
 // The option "featurelevel" is valid only for DirectX 12.
 // The possible values are "11_0", "11_1", "12_0", "12_1", and "12_2". The default value is "11_0".
 //
+// `EBITENGINE_REMOTEN` environment variable enables an experimental remote-process mode ("remoten").
+// When enabled, remoten-related role/session environment variables are interpreted internally.
+// remoten is currently unsupported on Windows and enabling it on Windows returns an error.
+//
+// `EBITENGINE_REMOTEN_ROLE` can be either "host" or "game".
+// The default role is "host".
+//
+// `EBITENGINE_REMOTEN_ENDPOINT` specifies a Unix domain socket path used for inter-process communication.
+//
+// `EBITENGINE_REMOTEN_SESSION` specifies a remoten session ID.
+//
+// `EBITENGINE_REMOTEN_LOG` specifies comma-separated remoten log categories (e.g. "ipc,batch,sync").
+//
 // # Build tags
 //
 // `ebitenginedebug` outputs a log of graphics commands. This is useful to know what happens in Ebitengine. In general, the

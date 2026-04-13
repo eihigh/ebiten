@@ -348,6 +348,10 @@ type RunGameOptions struct {
 func RunGameWithOptions(game Game, options *RunGameOptions) error {
 	defer isRunGameEnded_.Store(true)
 
+	if err := initializeRemotenRuntime(); err != nil {
+		return err
+	}
+
 	initializeWindowPositionIfNeeded(WindowSize())
 
 	op := toUIRunOptions(options)
