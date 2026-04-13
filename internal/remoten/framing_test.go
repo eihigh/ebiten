@@ -74,4 +74,3 @@ func TestEnvelopeValidate(t *testing.T) {
 		t.Fatal("Validate must return an error for mismatched payload")
 	}
 }
-

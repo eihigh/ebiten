@@ -89,4 +89,3 @@ func TestLoadConfigLogCategories(t *testing.T) {
 		t.Fatalf("len(cfg.LogCategories) = %d, want %d", got, want)
 	}
 }
-

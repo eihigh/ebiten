@@ -21,10 +21,10 @@ import (
 )
 
 const (
-	EnvEnabled      = "EBITENGINE_REMOTEN"
-	EnvRole         = "EBITENGINE_REMOTEN_ROLE"
-	EnvEndpoint     = "EBITENGINE_REMOTEN_ENDPOINT"
-	EnvSessionID    = "EBITENGINE_REMOTEN_SESSION"
+	EnvEnabled       = "EBITENGINE_REMOTEN"
+	EnvRole          = "EBITENGINE_REMOTEN_ROLE"
+	EnvEndpoint      = "EBITENGINE_REMOTEN_ENDPOINT"
+	EnvSessionID     = "EBITENGINE_REMOTEN_SESSION"
 	EnvLogCategories = "EBITENGINE_REMOTEN_LOG"
 )
 

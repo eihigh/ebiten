@@ -46,4 +46,3 @@ func TestChildEnv(t *testing.T) {
 		t.Fatalf("invalid child env: %v", env)
 	}
 }
-

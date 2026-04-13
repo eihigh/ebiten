@@ -23,22 +23,22 @@ import (
 type MessageType string
 
 const (
-	MessageHello       MessageType = "hello"
+	MessageHello        MessageType = "hello"
 	MessageCommandBatch MessageType = "command_batch"
-	MessageInputState  MessageType = "input_state"
-	MessageTerminate   MessageType = "terminate"
-	MessageError       MessageType = "error"
+	MessageInputState   MessageType = "input_state"
+	MessageTerminate    MessageType = "terminate"
+	MessageError        MessageType = "error"
 	MessageBackPressure MessageType = "back_pressure"
 )
 
 type Envelope struct {
-	Type         MessageType      `json:"type"`
-	Hello        *Hello           `json:"hello,omitempty"`
-	CommandBatch *CommandBatch    `json:"command_batch,omitempty"`
-	InputState   *InputState      `json:"input_state,omitempty"`
-	Terminate    *Terminate       `json:"terminate,omitempty"`
-	Error        *RemoteError     `json:"error,omitempty"`
-	BackPressure *BackPressure    `json:"back_pressure,omitempty"`
+	Type         MessageType   `json:"type"`
+	Hello        *Hello        `json:"hello,omitempty"`
+	CommandBatch *CommandBatch `json:"command_batch,omitempty"`
+	InputState   *InputState   `json:"input_state,omitempty"`
+	Terminate    *Terminate    `json:"terminate,omitempty"`
+	Error        *RemoteError  `json:"error,omitempty"`
+	BackPressure *BackPressure `json:"back_pressure,omitempty"`
 }
 
 type Hello struct {
@@ -52,8 +52,8 @@ type CommandBatch struct {
 }
 
 type Command struct {
-	Op      string          `json:"op"`
-	Payload json.RawMessage `json:"payload,omitempty"`
+	Op      string           `json:"op"`
+	Payload json.RawMessage  `json:"payload,omitempty"`
 	Shared  *SharedMemoryRef `json:"shared,omitempty"`
 }
 
@@ -81,7 +81,7 @@ type RemoteError struct {
 }
 
 type BackPressure struct {
-	QueueDepth   uint32 `json:"queue_depth"`
+	QueueDepth    uint32 `json:"queue_depth"`
 	MaxQueueDepth uint32 `json:"max_queue_depth"`
 }
 
