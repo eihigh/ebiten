@@ -280,50 +280,45 @@ func (q *commandQueue) flush(graphicsDriver graphicsdriver.Graphics, endFrame bo
 
 	cs := q.commands
 	for len(cs) > 0 {
-		nv := 0
-		ne := 0
-		nc := 0
-		for _, c := range cs {
-			if dtc, ok := c.(*drawTrianglesCommand); ok {
-				if nc > 0 && mustUseDifferentVertexBuffer(nv+dtc.numVertices()) {
-					break
-				}
-				nv += dtc.numVertices()
-				ne += dtc.numIndices()
-			}
-			nc++
-		}
-		if 0 < ne {
-			if err := graphicsDriver.SetVertices(vs[:nv], es[:ne]); err != nil {
-				return err
-			}
-			es = es[ne:]
-			vs = vs[nv:]
-		}
-		indexOffset := 0
-		for _, c := range cs[:nc] {
-			if err := c.Exec(q, graphicsDriver, indexOffset); err != nil {
+		if packet, nc, nv, ne := newDrawFramePacket(cs, vs, es); nc > 0 {
+			if err := packet.Exec(graphicsDriver); err != nil {
 				return err
 			}
 			if debug.IsDebug {
-				str := c.String()
-				for {
-					head, tail, ok := strings.Cut(str, "\n")
-					logger.FrameLogf("  %s\n", head)
-					if !ok {
-						break
+				for _, c := range cs[:nc] {
+					str := c.String()
+					for {
+						head, tail, ok := strings.Cut(str, "\n")
+						logger.FrameLogf("  %s\n", head)
+						if !ok {
+							break
+						}
+						str = tail
 					}
-					str = tail
 				}
 			}
-			// TODO: indexOffset should be reset if the command type is different
-			// from the previous one. This fix is needed when another drawing command is
-			// introduced than drawTrianglesCommand.
-			if dtc, ok := c.(*drawTrianglesCommand); ok {
-				indexOffset += dtc.numIndices()
+			cs = cs[nc:]
+			vs = vs[nv:]
+			es = es[ne:]
+			continue
+		}
+
+		c := cs[0]
+		if err := c.Exec(q, graphicsDriver, 0); err != nil {
+			return err
+		}
+		if debug.IsDebug {
+			str := c.String()
+			for {
+				head, tail, ok := strings.Cut(str, "\n")
+				logger.FrameLogf("  %s\n", head)
+				if !ok {
+					break
+				}
+				str = tail
 			}
 		}
-		cs = cs[nc:]
+		cs = cs[1:]
 	}
 
 	return nil
