@@ -37,7 +37,7 @@ type drawTrianglesFramePacketCommand struct {
 	fillRule   graphicsdriver.FillRule
 }
 
-func newDrawFramePacket(commands []command, vertices []float32, indices []uint32) (drawFramePacket, int, int, int) {
+func newDrawFramePacket(commands []command, vertices []float32, indices []uint32, vertexOffset uint32) (drawFramePacket, int, int, int) {
 	var nv, ne, nc int
 	for _, c := range commands {
 		dtc, ok := c.(*drawTrianglesCommand)
@@ -57,8 +57,11 @@ func newDrawFramePacket(commands []command, vertices []float32, indices []uint32
 
 	packet := drawFramePacket{
 		vertices: vertices[:nv],
-		indices:  indices[:ne],
+		indices:  append([]uint32(nil), indices[:ne]...),
 		draws:    make([]drawTrianglesFramePacketCommand, nc),
+	}
+	for i := range packet.indices {
+		packet.indices[i] -= vertexOffset
 	}
 	for i, c := range commands[:nc] {
 		packet.draws[i] = newDrawTrianglesFramePacketCommand(c.(*drawTrianglesCommand))

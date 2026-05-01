@@ -174,12 +174,12 @@ func newTestDrawTrianglesCommand(dstID, srcID graphicsdriver.ImageID, shaderID g
 
 func TestDrawFramePacketExec(t *testing.T) {
 	driver := &testGraphics{}
-	dtc1 := newTestDrawTrianglesCommand(1, 11, 21, 3)
+	dtc1 := newTestDrawTrianglesCommand(1, 11, 21, 6)
 	dtc2 := newTestDrawTrianglesCommand(2, 12, 22, 6)
 	vertices := make([]float32, len(dtc1.vertices)+len(dtc2.vertices))
-	indices := make([]uint32, dtc1.numIndices()+dtc2.numIndices())
+	indices := append(append([]uint32(nil), graphics.QuadIndices()...), addIndexOffset(graphics.QuadIndices(), 4)...)
 
-	packet, nc, nv, ne := newDrawFramePacket([]command{dtc1, dtc2}, vertices, indices)
+	packet, nc, nv, ne := newDrawFramePacket([]command{dtc1, dtc2}, vertices, indices, 0)
 	if got, want := nc, 2; got != want {
 		t.Fatalf("nc: got %d, want %d", got, want)
 	}
@@ -220,8 +220,9 @@ func TestDrawFramePacketExec(t *testing.T) {
 func TestCommandQueueFlushSplitsDrawPacketsAtNonDrawCommands(t *testing.T) {
 	driver := &testGraphics{}
 	executed := []string{}
-	dtc1 := newTestDrawTrianglesCommand(1, 11, 21, 3)
+	dtc1 := newTestDrawTrianglesCommand(1, 11, 21, 6)
 	dtc2 := newTestDrawTrianglesCommand(2, 12, 22, 6)
+	indices := append(append([]uint32(nil), graphics.QuadIndices()...), addIndexOffset(graphics.QuadIndices(), 4)...)
 	q := &commandQueue{
 		commands: []command{
 			dtc1,
@@ -229,7 +230,7 @@ func TestCommandQueueFlushSplitsDrawPacketsAtNonDrawCommands(t *testing.T) {
 			dtc2,
 		},
 		vertices: make([]float32, len(dtc1.vertices)+len(dtc2.vertices)),
-		indices:  make([]uint32, dtc1.numIndices()+dtc2.numIndices()),
+		indices:  indices,
 	}
 
 	if err := q.flush(driver, false, dummyFrameLogger{}); err != nil {
@@ -254,4 +255,15 @@ func TestCommandQueueFlushSplitsDrawPacketsAtNonDrawCommands(t *testing.T) {
 	if got, want := driver.ops, []string{"begin", "set-vertices", "draw", "marker", "set-vertices", "draw", "end"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("driver ops: got %v, want %v", got, want)
 	}
+	if got, want := driver.setVerticesArgs[1].indices, graphics.QuadIndices(); !reflect.DeepEqual(got, want) {
+		t.Fatalf("second packet indices: got %v, want %v", got, want)
+	}
+}
+
+func addIndexOffset(indices []uint32, offset uint32) []uint32 {
+	out := append([]uint32(nil), indices...)
+	for i := range out {
+		out[i] += offset
+	}
+	return out
 }

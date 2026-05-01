@@ -279,8 +279,9 @@ func (q *commandQueue) flush(graphicsDriver graphicsdriver.Graphics, endFrame bo
 	}()
 
 	cs := q.commands
+	vertexOffset := uint32(0)
 	for len(cs) > 0 {
-		if packet, nc, nv, ne := newDrawFramePacket(cs, vs, es); nc > 0 {
+		if packet, nc, nv, ne := newDrawFramePacket(cs, vs, es, vertexOffset); nc > 0 {
 			if err := packet.Exec(graphicsDriver); err != nil {
 				return err
 			}
@@ -300,6 +301,7 @@ func (q *commandQueue) flush(graphicsDriver graphicsdriver.Graphics, endFrame bo
 			cs = cs[nc:]
 			vs = vs[nv:]
 			es = es[ne:]
+			vertexOffset += uint32(nv / graphics.VertexFloatCount)
 			continue
 		}
 
